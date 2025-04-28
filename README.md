@@ -20,11 +20,13 @@
 
 -Install Java 21 and Maven.
 
-## Files
+## Files (classes)
 
--SpaceInvadersGame.java: Main class; manages game loop, input, updates, and rendering.
--Enemy.java: Defines enemy properties (position, level, health) and collision box.
--Bullet.java: Defines bullet properties (position, type) and collision box.
+1-SpaceInvadersGame.java: Main class; manages game loop, input, updates, and rendering.
+
+2-Enemy.java: Defines enemy properties (position, level, health) and collision box.
+
+3-Bullet.java: Defines bullet properties (position, type) and collision box.
 
 ## Notes
 
