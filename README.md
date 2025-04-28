@@ -5,16 +5,22 @@
 ## Features
 
 -5x8 enemy grid with three difficulty levels (speed and health vary).
+
 -Player movement (left/right) and shooting with cooldown.
+
 -3 lives; frequent enemy shots increase challenge.
+
 -Scoring system: 30/20/10 points for defeating level 3/2/1 enemies.
+
 -Win by defeating all enemies; lose if lives run out or enemies reach bottom.
+
 -Uses ArrayList for dynamic management of enemies and bullets.
 
 ## Controls
 
--Left/Right Arrows: Move ship horizontally.
--Spacebar: Shoot (hold for rapid fire, tap for precision).
+-Left/Right Arrows: Move ship horizontally
+
+-Spacebar: Shoot (hold for rapid fire, tap for precision)
 
 ## Setup
 
@@ -31,6 +37,9 @@
 ## Notes
 
 -Final project for CIT-215 (Java)
--Use of <ArrayList> for Enemy and Bullet handling.
+
+-Use of <ArrayList> for Enemy and Bullet handling
+
 -Simple and Fun project* 
+
 -Updates and upgrades coming soon...!
