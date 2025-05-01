@@ -1,18 +1,27 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.IOException;
 
-// REPRESENTS THE PLAYER IN THE GAME
 public class Player {
-    private int x, lives; // PLAYER POSITION AND LIVES
-    private final Rectangle hitbox; // PLAYER HITBOX FOR COLLISION
+    private int x, lives;  // POSITION & LIVES
+    private final Rectangle hitbox; // HITBOX (COLLISION)
+    private final Image image;
 
-    // INITIALIZES PLAYER POSITION AND LIVES
+    // PLAYER POSITION, LIVES, & IMAGE
     public Player(int x, int lives) {
         this.x = x;
         this.lives = lives;
-        this.hitbox = new Rectangle(x, 500, 30, 20);
+        this.hitbox = new Rectangle(x, 575, 54, 36);
+        Image tempImage = null;
+        try {
+            tempImage = ImageIO.read(getClass().getResource("/player.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.image = tempImage;
     }
 
-    // MOVES PLAYER LEFT OR RIGHT
+    // MOVES PLAYER >> LEFT/RIGHT <<
     public void move(int dx) {
         x += dx;
         hitbox.x = x; // UPDATES HITBOX POSITION
@@ -22,13 +31,14 @@ public class Player {
     public int getX() {
         return x;
     }
-
     public int getLives() {
         return lives;
     }
-
     public Rectangle getHitbox() {
         return hitbox;
+    }
+    public Image getImage() {
+        return image;
     }
 
     // SETTERS
@@ -36,12 +46,11 @@ public class Player {
         this.x = x;
         hitbox.x = x; // UPDATES HITBOX POSITION
     }
-
     public void setLives(int lives) {
         this.lives = lives;
     }
 
-    // RETURNS A STRING REPRESENTATION OF THE PLAYER
+    // toString() - RETURNS STRING of PLAYER
     @Override
     public String toString() {
         return "Player [x=" + x + ", lives=" + lives + ", hitbox=" + hitbox + "]";
