@@ -3,58 +3,58 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-// REPRESENTS THE MAIN GAME CLASS FOR SPACE INVADERS
+// MAIN CLASS for SPACE INVADERS GAME
 public class SpaceInvadersGame extends JFrame {
-    private final ArrayList<Enemy> enemies = new ArrayList<>(40); // STORES ALL ENEMY ALIENS
-    private final ArrayList<Bullet> bullets = new ArrayList<>();  // STORES ALL BULLETS (PLAYER AND ENEMY)
-    private final Player player; // PLAYER OBJECT
-    private int descentCounter = 0, enemyDirection = 1, score = 0; // ENEMY MOVEMENT TRACKING AND SCORE
-    private boolean gameOver; // FLAGS IF GAME IS OVER
-    private final JLabel livesLabel; // DISPLAYS PLAYER LIVES
-    private final JLabel scoreLabel; // DISPLAYS PLAYER SCORE
-    private final Timer timer; // DRIVES THE GAME LOOP
-    private long lastShotTime; // TRACKS LAST PLAYER SHOT FOR COOLDOWN
+    private final ArrayList<Enemy> enemies = new ArrayList<>(65); // ENEMY ALIENS (set to 65)
+    private final ArrayList<Bullet> bullets = new ArrayList<>();  // BULLETS (PLAYER & ENEMY)
+    private final Player player;
+    private int descentCounter = 0, enemyDirection = 1, score = 0; // ENEMY MOVEMENT & SCORE
+    private boolean gameOver;  // CHECKS if GAME OVER
+    private final JLabel livesLabel; // PLAYER LIVES
+    private final JLabel scoreLabel;  // PLAYER SCORE
+    private final Timer timer; // GAME LOOP
+    private long lastShotTime;  // LAST PLAYER SHOT (cooldown)
 
-    // INITIALIZES GAME WINDOW, UI, AND STATE
+    // INITIALIZES GAME WINDOW, UI, & STATE
     public SpaceInvadersGame() {
         setTitle("Space Invaders");
-        setSize(800, 600);
+        setSize(1104, 690);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         GamePanel panel = new GamePanel();
         panel.setBackground(Color.BLACK);
         add(panel);
-        player = new Player(350, 3); // INITIALIZES PLAYER AT X=350 WITH 3 LIVES
+        player = new Player(350, 3); // PLAYER STARTs -> (X=350 WITH 3 LIVES)
         livesLabel = new JLabel("Lives: " + player.getLives());
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(10, 10, 100, 20);
         panel.add(livesLabel);
         scoreLabel = new JLabel("Score: " + score);
         scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setBounds(690, 10, 100, 20);
+        scoreLabel.setBounds(994, 10, 100, 20);
         panel.add(scoreLabel);
 
-        // CREATES 5X8 GRID OF ENEMIES
+        // ENEMY GRID (**5X13** for a TOTAL of 65) <--apt to change
         for (int row = 0; row < 5; row++)
-            for (int col = 0; col < 8; col++)
-                enemies.add(new Enemy(100 + col * 60, 50 + row * 50, row == 0 ? 3 : row <= 2 ? 2 : 1));
+            for (int col = 0; col < 13; col++)
+                enemies.add(new Enemy(50 + col * 65, 30 + row * 72, row == 0 ? 3 : row <= 2 ? 2 : 1));
 
-        // HANDLES PLAYER INPUT (MOVEMENT AND SHOOTING)
+        // HANDLES PLAYER INPUT (MOVEMENT/SHOOTING)
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (gameOver) return;
                 if (e.getKeyCode() == KeyEvent.VK_LEFT && player.getX() > 0) player.move(-10);
-                else if (e.getKeyCode() == KeyEvent.VK_RIGHT && player.getX() < 750) player.move(10);
+                else if (e.getKeyCode() == KeyEvent.VK_RIGHT && player.getX() < 1050) player.move(10);
                 else if (e.getKeyCode() == KeyEvent.VK_SPACE && System.currentTimeMillis() - lastShotTime >= 200) {
-                    bullets.add(new Bullet(player.getX() + 15, 500, true));
+                    bullets.add(new Bullet(player.getX() + 27, 575, true));
                     lastShotTime = System.currentTimeMillis();
                 }
                 panel.repaint();
             }
         });
 
-        // STARTS THE GAME LOOP (UPDATES EVERY 50MS)
+        // STARTS GAME LOOP (UPDATES EVERY 50MS)
         timer = new Timer(50, e -> {
             if (!gameOver) {
                 updateGame();
@@ -66,24 +66,24 @@ public class SpaceInvadersGame extends JFrame {
         setVisible(true);
     }
 
-    // UPDATES GAME STATE EACH FRAME
+    // UPDATES GAME (EACH FRAME)
     private void updateGame() {
-        // MOVES ENEMIES HORIZONTALLY AND CHECKS FOR DIRECTION REVERSAL
+        // MOVES ENEMIES HORIZONTALLY & LOOKS for REVERSAL
         boolean reverse = false;
         for (Enemy e : enemies) {
             e.setX(e.getX() + e.getLevel() * enemyDirection);
-            if (e.getX() <= 0 || e.getX() >= 750) reverse = true;
+            if (e.getX() <= 0 || e.getX() >= 1050) reverse = true;
         }
         if (reverse) enemyDirection = -enemyDirection;
 
-        // LOWERS ENEMIES EVERY 100 FRAMES
+        // LOWERS ENEMIES **EVERY 100 FRAMES** (change for difficulty...levels 2 & up!)
         if (++descentCounter >= 100) {
             for (Enemy e : enemies) {
                 e.setY(e.getY() + 10);
-                if (e.getY() >= 500) {
+                if (e.getY() >= 575) {
                     gameOver = true;
                     timer.stop();
-                    JOptionPane.showMessageDialog(this, "Game Over! Enemies reached the bottom.\nScore: " + score);
+                    JOptionPane.showMessageDialog(this, "Game Over! Enemies reached the player.\nScore: " + score);
                     dispose();
                     return;
                 }
@@ -91,11 +91,11 @@ public class SpaceInvadersGame extends JFrame {
             descentCounter = 0;
         }
 
-        // UPDATES BULLETS AND CHECKS FOR COLLISIONS
+        // UPDATES BULLETS & LOOKS for COLLISIONS
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet b = bullets.get(i);
             b.move();
-            if (b.getY() < 0 || b.getY() > 600) {
+            if (b.getY() < 0 || b.getY() > 690) {
                 bullets.remove(i);
                 continue;
             }
@@ -129,13 +129,13 @@ public class SpaceInvadersGame extends JFrame {
             }
         }
 
-        // TRIGGERS ENEMY SHOOTING (5% CHANCE PER FRAME)
-        if (Math.random() < 0.05 && !enemies.isEmpty()) {
+        // ENEMY SHOOTING (7% CHANCE PER FRAME)
+        if (Math.random() < 0.07 && !enemies.isEmpty()) {
             Enemy e = enemies.get((int) (Math.random() * enemies.size()));
             bullets.add(new Bullet(e.getX() + e.getWidth() / 2, e.getY() + e.getHeight(), false));
         }
 
-        // CHECKS FOR WIN CONDITION (ALL ENEMIES DEFEATED)
+        // CHECKS for WIN CONDITION (ALL ENEMIES DEFEATED)
         if (enemies.isEmpty()) {
             gameOver = true;
             timer.stop();
@@ -144,25 +144,25 @@ public class SpaceInvadersGame extends JFrame {
         }
     }
 
-    // RENDERS GAME OBJECTS ON SCREEN
+    // RENDERS OBJECTS on SCREEN
     class GamePanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             for (Enemy e : enemies) {
-                g.setColor(e.getLevel() == 3 ? new Color(255, 0, 255) : e.getLevel() == 2 ? new Color(0, 255, 255) : new Color(128, 0, 128));
-                g.fillRect(e.getX(), e.getY(), e.getWidth(), e.getHeight());
+                // ENEMY IMAGE
+                g.drawImage(e.getImage(), e.getX(), e.getY(), e.getWidth(), e.getHeight(), null);
             }
-            g.setColor(new Color(0, 255, 200));
-            g.fillRect(player.getX(), 500, 30, 20);
+            // PLAYER IMAGE
+            g.drawImage(player.getImage(), player.getX(), 575, 54, 36, null);
             for (Bullet b : bullets) {
                 g.setColor(b.isPlayer() ? new Color(50, 205, 50) : new Color(255, 165, 0));
-                g.fillRect(b.getX(), b.getY(), 5, 10);
+                g.fillRect(b.getX(), b.getY(), 5, 9); // REDUCED 50% FROM 9X18
             }
         }
     }
 
-    // LAUNCHES THE GAME
+    // LAUNCHES the GAME ... Pew! Pew! 💥💥
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SpaceInvadersGame::new);
     }
