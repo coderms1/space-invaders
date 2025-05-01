@@ -1,76 +1,78 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.IOException;
 
-// Represents an ENEMY ALIEN in the game
 public class Enemy {
     private int x, y, level, health, width, height;
+    private final Image image;
 
-    // Initializes enemy POSITION, LEVEL, & HEALTH
+    // ENEMY POSITION, LEVEL, HEALTH, & IMAGE
     public Enemy(int x, int y, int level) {
         this.x = x;
         this.y = y;
-        // file name (image)
         this.level = level;
         this.health = level;
-        this.width = level == 3 ? 30 : level == 2 ? 25 : 20;
-        this.height = level == 3 ? 20 : level == 2 ? 15 : 10;
+        this.width = level == 3 ? 54 : level == 2 ? 45 : 36;
+        this.height = level == 3 ? 36 : level == 2 ? 27 : 18;
+        Image tempImage = null;
+        try {
+            String imagePath = "/enemy" + level + ".png";
+            tempImage = ImageIO.read(getClass().getResource(imagePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.image = tempImage;
     }
 
-    // Returns a COLLISION RECTANGLE for the ENEMY (keep in bounds)
+    // COLLISION RECTANGLE (KEEP IN BOUNDS)
     Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
     }
 
-    // Getters
+    // GETTERS
     public int getX() {
         return x;
     }
-
     public int getY() {
         return y;
     }
-
     public int getLevel() {
         return level;
     }
-
     public int getHealth() {
         return health;
     }
-
     public int getWidth() {
         return width;
     }
-
     public int getHeight() {
         return height;
     }
+    public Image getImage() {
+        return image;
+    }
 
-    // Setters
+    // SETTERS
     public void setX(int x) {
         this.x = x;
     }
-
     public void setY(int y) {
         this.y = y;
     }
-
     public void setLevel(int level) {
         this.level = level;
     }
-
     public void setHealth(int health) {
         this.health = health;
     }
-
     public void setWidth(int width) {
         this.width = width;
     }
-
     public void setHeight(int height) {
         this.height = height;
     }
 
-    // toString method
+    // toString() - RETURNS STRING of ENEMY
     @Override
     public String toString() {
         return "Enemy [x=" + x + ", y=" + y + ", level=" + level + ", health=" + health +
