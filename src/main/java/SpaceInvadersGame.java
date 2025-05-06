@@ -1,7 +1,11 @@
+// File: SpaceInvadersGame.java
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import javax.sound.sampled.*;
+import java.io.IOException;
 
 // MAIN CLASS for SPACE INVADERS GAME
 public class SpaceInvadersGame extends JFrame {
@@ -14,6 +18,9 @@ public class SpaceInvadersGame extends JFrame {
     private final JLabel scoreLabel;  // PLAYER SCORE
     private final Timer timer; // GAME LOOP
     private long lastShotTime;  // LAST PLAYER SHOT (cooldown)
+    private Clip explosionClip; // AUDIO -> ENEMY EXPLOSION
+    private Clip shootClip; // AUDIO -> PLAYER SHOOTING
+    private Clip ouchClip; // AUDIO -> PLAYER HIT
 
     // INITIALIZES GAME WINDOW, UI, & STATE
     public SpaceInvadersGame() {
@@ -39,6 +46,51 @@ public class SpaceInvadersGame extends JFrame {
             for (int col = 0; col < 13; col++)
                 enemies.add(new Enemy(50 + col * 65, 30 + row * 72, row == 0 ? 3 : row <= 2 ? 2 : 1));
 
+        // EXPLOSION SOUND
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/boom.wav"));
+            explosionClip = AudioSystem.getClip();
+            explosionClip.open(audioInputStream);
+            // VOLUME
+            FloatControl gainControl = (FloatControl) explosionClip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10.0f); // Reduce volume
+            audioInputStream.close();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+            explosionClip = null;
+        }
+
+        // SHOOT SOUND
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/shoot.wav"));
+            shootClip = AudioSystem.getClip();
+            shootClip.open(audioInputStream);
+            // VOLUME
+            FloatControl gainControl = (FloatControl) shootClip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10.0f);
+            audioInputStream.close();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+            shootClip = null;
+        }
+
+        // PLAYER HIT SOUND
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/ouch.wav"));
+            ouchClip = AudioSystem.getClip();
+            ouchClip.open(audioInputStream);
+            // VOLUME
+            FloatControl gainControl = (FloatControl) ouchClip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10.0f);
+            audioInputStream.close();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+            ouchClip = null;
+        }
+
         // HANDLES PLAYER INPUT (MOVEMENT/SHOOTING)
         addKeyListener(new KeyAdapter() {
             @Override
@@ -49,6 +101,8 @@ public class SpaceInvadersGame extends JFrame {
                 else if (e.getKeyCode() == KeyEvent.VK_SPACE && System.currentTimeMillis() - lastShotTime >= 200) {
                     bullets.add(new Bullet(player.getX() + 27, 575, true));
                     lastShotTime = System.currentTimeMillis();
+                    // SHOOT SOUND METHOD
+                    playSound(shootClip);
                 }
                 panel.repaint();
             }
@@ -64,6 +118,15 @@ public class SpaceInvadersGame extends JFrame {
         timer.start();
         setFocusable(true);
         setVisible(true);
+    }
+
+    // PLAYSOUND METHOD
+    private void playSound(Clip clip) {
+        if (clip != null) {
+            clip.stop(); // RESET
+            clip.setFramePosition(0);
+            clip.start();
+        }
     }
 
     // UPDATES GAME (EACH FRAME)
@@ -108,6 +171,8 @@ public class SpaceInvadersGame extends JFrame {
                             enemies.remove(j);
                             score += e.getLevel() == 3 ? 30 : e.getLevel() == 2 ? 20 : 10;
                             scoreLabel.setText("Score: " + score);
+                            // Play explosion sound using reusable method
+                            playSound(explosionClip);
                         }
                         bullets.remove(i);
                         break;
@@ -118,6 +183,8 @@ public class SpaceInvadersGame extends JFrame {
                     player.setLives(player.getLives() - 1);
                     livesLabel.setText("Lives: " + player.getLives());
                     bullets.remove(i);
+                    // Play ouch sound when player is hit
+                    playSound(ouchClip);
                     if (player.getLives() <= 0) {
                         gameOver = true;
                         timer.stop();
@@ -142,6 +209,21 @@ public class SpaceInvadersGame extends JFrame {
             JOptionPane.showMessageDialog(this, "You Win! All enemies defeated.\nScore: " + score);
             dispose();
         }
+    }
+
+    // Override dispose to ensure audio clips are closed
+    @Override
+    public void dispose() {
+        if (explosionClip != null) {
+            explosionClip.close();
+        }
+        if (shootClip != null) {
+            shootClip.close();
+        }
+        if (ouchClip != null) {
+            ouchClip.close();
+        }
+        super.dispose();
     }
 
     // RENDERS OBJECTS on SCREEN
