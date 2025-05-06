@@ -7,6 +7,7 @@
 -3 lives; frequent enemy shots increase challenge.
 -Scoring system: 30/20/10 points for defeating level 3/2/1 enemies.
 -Win by defeating all enemies; lose if lives run out or enemies reach bottom.
+-PewPew and BOOOM noises for gamer experience.
 -Uses ArrayList for dynamic management of enemies and bullets.
 
 ## Controls
@@ -17,10 +18,15 @@
 -Install Java 21 and Maven.
 
 ## Files
--SpaceInvadersGame.java: Main class; manages game loop, input, updates, and rendering.
--Player.java: Defines player properties (position, lives, score) and collision box.
--Enemy.java: Defines enemy properties (position, level, health) and collision box.
--Bullet.java: Defines bullet properties (position, type) and collision box.
+-SpaceInvadersGame.java: Main class; manages game loop, input, updates, sounds, and rendering
+
+-Player.java: Defines player properties (position, lives, score) and collision box
+
+-Enemy.java: Defines enemy properties (position, level, health) and collision box
+
+-Bullet.java: Defines bullet properties (position, type) and collision box
+
+-Resources(bin): Contains the in-game images and sounds
 
 ## Notes
 -Final project for CIT-215 (Java)
