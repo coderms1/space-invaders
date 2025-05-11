@@ -1,5 +1,6 @@
 // File: SpaceInvadersGame.java
 
+// IMPORT the necessary UTILITIES and MODULES
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
